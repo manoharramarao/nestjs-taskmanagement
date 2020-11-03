@@ -1,13 +1,60 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
 import * as uuid from 'uuid';
-import { TaskStatus, Task } from './tasks.model';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { GetTasksFilterDto } from './dto/get-tasks-filter.dto';
+import { TaskRepository } from './task.repository';
+import { Task } from './task.entity';
+import { DeleteResult } from 'typeorm';
+import { TaskStatus } from './task-status.enum';
 
 @Injectable()
 export class TasksService {
 
-    private tasks: Task[] = [];
+    constructor (
+        @InjectRepository(TaskRepository)
+        private taskRepository: TaskRepository,
+    ) {}
+
+    async getTaskById(id: number): Promise<Task>{
+        const found = await this.taskRepository.findOne(id);
+        if(!found){
+            throw new NotFoundException(`Task with ID ${id} not found`);
+        }
+        return found;
+    }
+
+    async createTask(createTaskDto: CreateTaskDto): Promise<Task> {
+        return await this.taskRepository.createTask(createTaskDto);
+    }
+
+    async deleteTask(id: number): Promise<DeleteResult>{
+        /* const found = await this.taskRepository.findOne(id);
+        if(!found){
+            throw new NotFoundException(`Task with id ${id} is not found`);
+        }
+        await found.remove(); */
+        const result = await this.taskRepository.delete(id);
+        if(result.affected === 0){
+            throw new NotFoundException(`The task with id ${id} is not found`);
+        }
+
+        return result;
+    }
+    
+    async udpateTaskStatus(id: number, status: TaskStatus): Promise<Task>{
+
+        const task = await this.getTaskById(id);
+        task.status = status;
+        await task.save();
+        return task;
+    }
+
+    async getTasks(filterDto: GetTasksFilterDto): Promise<Task[]>{
+        return await this.taskRepository.getTasks(filterDto);
+    }
+
+    /* private tasks: Task[] = [];
 
     getAllTasks(): Task[] {
         return this.tasks;
@@ -59,6 +106,6 @@ export class TasksService {
         const task = this.getTaskById(id);
         task.status = status;
         return task;
-    }
+    } */
 
 }
