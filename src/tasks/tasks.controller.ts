@@ -33,8 +33,11 @@ export class TasksController {
     }
 
     @Delete('/:id')
-    async deleteTask(@Param('id', ParseIntPipe) id: number): Promise<DeleteResult>{
-        return await this.taskService.deleteTask(id);
+    async deleteTask(
+        @Param('id', ParseIntPipe) id: number,
+        @GetUser() user: User
+    ): Promise<DeleteResult>{
+        return await this.taskService.deleteTask(id, user);
     }
 
     @Patch('/:id/status')
