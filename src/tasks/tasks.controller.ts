@@ -37,13 +37,14 @@ export class TasksController {
         return await this.taskService.deleteTask(id);
     }
 
-    /* @Patch('/:id/status')
+    @Patch('/:id/status')
     async updateTaskStatus(
         @Param('id', ParseIntPipe) id: number, 
-        @Body('status', TaskStatusValidationPipe) status: TaskStatus
+        @Body('status', TaskStatusValidationPipe) status: TaskStatus,
+        @GetUser() user: User
     ): Promise<Task>{
-        return await this.taskService.udpateTaskStatus(id, status);
-    } */
+        return await this.taskService.udpateTaskStatus(id, status, user);
+    }
 
     @Get()
     getTasks(

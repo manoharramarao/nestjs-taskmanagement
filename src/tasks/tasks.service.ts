@@ -48,13 +48,20 @@ export class TasksService {
         return result;
     }
     
-    /* async udpateTaskStatus(id: number, status: TaskStatus): Promise<Task>{
+    async udpateTaskStatus(
+        id: number, 
+        status: TaskStatus,
+        user: User
+    ): Promise<Task>{
 
-        const task = await this.getTaskById(id);
+        const task = await this.getTaskById(id, user);
+        if(!task){
+            throw new NotFoundException(`Task with ID ${id} not found`);
+        }
         task.status = status;
         await task.save();
         return task;
-    } */
+    }
 
     async getTasks(
         filterDto: GetTasksFilterDto,
