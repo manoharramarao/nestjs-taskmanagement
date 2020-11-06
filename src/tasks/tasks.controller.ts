@@ -17,8 +17,11 @@ export class TasksController {
     constructor(private taskService: TasksService){}
 
     @Get('/:id')
-    getTaskById(@Param('id', ParseIntPipe) id: number): Promise<Task> {
-        return this.taskService.getTaskById(id);
+    getTaskById(
+        @Param('id', ParseIntPipe) id: number,
+        @GetUser() user: User
+    ): Promise<Task> {
+        return this.taskService.getTaskById(id, user);
     }
 
     @Post()
@@ -34,13 +37,13 @@ export class TasksController {
         return await this.taskService.deleteTask(id);
     }
 
-    @Patch('/:id/status')
+    /* @Patch('/:id/status')
     async updateTaskStatus(
         @Param('id', ParseIntPipe) id: number, 
         @Body('status', TaskStatusValidationPipe) status: TaskStatus
     ): Promise<Task>{
         return await this.taskService.udpateTaskStatus(id, status);
-    }
+    } */
 
     @Get()
     getTasks(
